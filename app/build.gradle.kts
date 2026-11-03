@@ -26,14 +26,14 @@ android {
             val keystorePropertiesFile = rootProject.file("keystore.properties")
             if (keystorePropertiesFile.exists()) {
                 val keystoreProperties = java.util.Properties()
-                keystoreProperties.load(java.io.FileInputStream(keystorePropertiesFile))
-                storeFile = file(keystoreProperties["storeFile"] as String)
+                keystorePropertiesFile.inputStream().use { keystoreProperties.load(it) }
+                storeFile = rootProject.file(keystoreProperties["storeFile"] as String)
                 storePassword = keystoreProperties["storePassword"] as String
                 keyAlias = keystoreProperties["keyAlias"] as String
                 keyPassword = keystoreProperties["keyPassword"] as String
             } else {
-                // Fallback for CI (secrets)
-                storeFile = file("../release.keystore")
+                // Fallback for CI
+                storeFile = rootProject.file("release.keystore")
                 storePassword = System.getenv("KEYSTORE_PASSWORD") ?: ""
                 keyAlias = System.getenv("KEY_ALIAS") ?: "release"
                 keyPassword = System.getenv("KEY_PASSWORD") ?: ""
